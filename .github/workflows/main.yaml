@@ -4,7 +4,7 @@ env:
   SERVER_USER: root
 on:
   push:
-    branches: master
+    branches: main
 
 jobs:
   tests:
