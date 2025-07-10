@@ -1,0 +1,48 @@
+name: CI/CD workflow
+env:
+  SERVER_IP: "51.195.44.163"
+  SERVER_USER: root
+on:
+  push:
+    branches: master
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working_directory: ./server
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: "npm"
+          cache-dependency-path: ./package-lock.json
+      - name: Install Dependencies
+        run: npm ci --cache .npm --prefer-offline
+      - name: Launch Test
+        run: npm run test:ci
+      - name: Lint
+        run: npm run lint
+      - name: Check Dependencies Security 
+        run: npm audit
+  
+  deploy:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Deploy on Server
+        run: |
+          eval $(ssh-agent -s)
+          ssh-add - <<< "${{ secrets.SSH_KEY_VPS }}"
+          mkdir -p ~/.ssh
+          ssh-keyscan -H $SERVER_API >> ~/.ssh/known_hosts
+          scp -r ./server $SERVER_USER@$SERVER_IP:/var/www
+          ssh $SERVER_USER@$SERVER_IP "cd /var/www/Server && npm install --omit=dev"
+          ssh $SERVER_USER@$SERVER_IP "cd /var/www/Server && pm2 startOrRestart ecosystem.config.js --env production && pm2 save"
+
+
