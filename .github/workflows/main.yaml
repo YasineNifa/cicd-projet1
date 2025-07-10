@@ -75,7 +75,7 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Check Dependencies Security 
-        run: npm audit fix
+        run: npm audit fix --force
   
   deploy:
     needs: [check-tests-backend, build-frontend]
