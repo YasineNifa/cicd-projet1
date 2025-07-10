@@ -76,9 +76,42 @@ jobs:
         run: npm run lint
       - name: Check Dependencies Security 
         run: npm audit fix --force
+
+  
+  test-end-2-end:
+    needs: build-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: "npm"
+          cache-dependency-path: '**/package-lock.json'
+      - name: Install Dependencies
+        run: cd server && npm ci --prefer-offline 
+      - name: Download Build Artifect
+        uses: actions/download-artifact@v4 
+        with:
+          name: build
+          path: ./client/dist
+      - name: Start backend
+        run: |
+          cd server
+          npm start & #se lancer dans le background avec &
+      - name: exec cypress
+        use: cypress-io/github-action@v6
+        with:
+          working-directory: ./client
+          browser: chrome
+          start: npm run preview
+          wait-on: http://localhost:4173
+          wait-on-timeout: 60
+          config: baseUrl=http://localhost:4173
   
   deploy:
-    needs: [check-tests-backend, build-frontend]
+    needs: [check-tests-backend, test-end-2-end]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
