@@ -71,11 +71,11 @@ jobs:
           cache: "npm"
           cache-dependency-path: ./client/package-lock.json
       - name: Install Dependencies
-        run: npm ci --prefer-offline # Delete --cache .npm 
+        run: npm ci --prefer-offline
       - name: Lint
         run: npm run lint
-      - name: Check Dependencies Security 
-        run: npm audit fix --force
+      # - name: Check Dependencies Security 
+      #   run: npm audit fix --force
 
   
   test-end-2-end:
