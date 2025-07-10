@@ -101,7 +101,7 @@ jobs:
           cd server
           npm start & #se lancer dans le background avec &
       - name: exec cypress
-        use: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v6
         with:
           working-directory: ./client
           browser: chrome
