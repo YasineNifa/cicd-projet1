@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           cache: "npm"
-          cache-dependency-path: ./package-lock.json
+          cache-dependency-path: ./server/package-lock.json
       - name: Install Dependencies
         run: npm ci --prefer-offline # Delete --cache .npm 
       - name: Launch Test
