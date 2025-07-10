@@ -27,7 +27,7 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Check Dependencies Security 
-        run: npm audit
+        run: npm audit fix
   
   deploy:
     needs: tests
